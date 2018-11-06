@@ -31,13 +31,27 @@ func (node *treeNode) setValue(value int) {
 
 //按照中序遍历树节点
 func (node *treeNode) traverse() {
-
 	if node == nil {
 		return
 	}
 	node.left.traverse()
 	node.print()
 	node.right.traverse()
+}
+
+func (node *treeNode) traverseWithChannel() chan *treeNode {
+	out := make(chan *treeNode)
+	go func(node *treeNode) {
+		node.traverse()
+		out <- node
+		close(out)
+	}(node)
+
+	return out
+}
+
+func test() chan string{
+
 }
 
 func main() {
@@ -66,7 +80,20 @@ func main() {
 	fmt.Println("0000000000-------00000000000")
 	root.traverse()
 
+	c := root.traverseWithChannel()
+	maxValue := 0
+	fmt.Println("----"+string(len(c)))
+	for node := range c {
+		fmt.Println("------")
+		fmt.Println(node.value)
+		if node.value > maxValue {
+			maxValue = node.value
+		}
+	}
+	fmt.Printf("max value is %d", maxValue)
+
 }
+
 //struct传值和传指针的区别, 需要明确的是在go语言中没有class的概念，也没有封装和继承的概念，go语言通过面向函数编程，
 //通过定义struct中以及struct中定义方法完成对struct的操作，其中struct中没有构造方法。
 //只有指针可以修改方法，nil指针也可以调用方法，和其他语言的null不同

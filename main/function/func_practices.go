@@ -37,6 +37,10 @@ func funcTest(test func()) {
 	fmt.Println("test")
 }
 
+func test11() ([]int, int) {
+	return make([]int, 20), 0
+}
+
 func main() {
 	test()
 	fmt.Println(exchange(3, 2))
